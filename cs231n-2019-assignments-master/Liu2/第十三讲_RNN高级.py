@@ -148,15 +148,20 @@ def make_tensors(names, countries):
     # sort by length to use pack_padded_sequence
     seq_lengths, perm_idx = seq_lengths.sort(dim=0, descending=True)
     # pytorch 的sort返回两个值：排完序的seq和对应的索引
-    seq_tensor = seq_tensor[perm_idx]
-    countries = countries[perm_idx]
+    # 将seq_lengths按序列长度重新降序排序，返回排序结果和排序序列。
+    seq_tensor = seq_tensor[perm_idx]  # 按新序列把ASCII表重新排序
+    countries = countries[perm_idx]  # 按新序列把国家列表重新排序
 
-    return create_tensor(seq_tensor), \
-           create_tensor(seq_lengths), \
-           create_tensor(countries)  # 标签
+    # 返回排序后的 ASCII列表         名字长度降序列表        国家名列表
+    return create_tensor(seq_tensor), seq_lengths, create_tensor(countries)
 
 
-# 他这个 \ 可以换行
+'''
+直接 create_tensor(seq_lengths) 会报错
+# RuntimeError: 'lengths' argument should be a 1D CPU int64 tensor, but got 1D cuda:0 Long tensor
+
+# "\"可以换行
+'''
 
 
 def name2list(name):
